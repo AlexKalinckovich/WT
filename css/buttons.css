@@ -1,0 +1,15 @@
+.order-btn {
+    background-color: #ffcc00; /* Yellow color */
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.order-btn:hover {
+    background-color: #ffb300; /* Darker yellow on hover */
+}
