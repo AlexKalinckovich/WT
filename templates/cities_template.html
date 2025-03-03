@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Список городов</title>
+    <link rel="stylesheet" href="/views/css/city_template.css">
+</head>
+<body>
+<section id="citiesList">
+    <h1>Обработанные города</h1>
+    <div class="cities-container">
+        {{ if !empty($cities) }}
+        <ul class="city-list">
+            {{ foreach $cities as $city }}
+            <li class="city-item">{{ $city }}</li>
+            {{ endforeach }}
+        </ul>
+        {{ else }}
+        <p>Города не были переданы!</p>
+        {{ endif }}
+    </div>
+    <a href="/">Вернуться назад</a>
+</section>
+</body>
+</html>
