@@ -44,7 +44,7 @@
         {{ if !empty($menuItems) }}
         {{ foreach $menuItems as $index => $item }}
         <div class="menu-item" data-id="{{ $index + 1 }}">
-            <img src="Public/images/{{ $item['image_path'] }}" alt="{{ $item['name'] }}">
+            <img src="public/images/{{ $item['image_path'] }}" alt="{{ $item['name'] }}">
             <h3>{{ $item['name'] }}</h3>
             <p class="description">{{ $item['description'] }}</p>
             <button class="order-btn">Order</button>
