@@ -2,22 +2,19 @@
 
 namespace Controller;
 
-use Exception;
 use services\CityService;
-use TemplateFacade;
 
 class CityController
 {
 
-    private $cityService;
+    private CityService $cityService;
 
     public function __construct(cityService $cityService)
     {
         $this->cityService = $cityService;
     }
 
-
-    public function handleCities()
+    public function handleCities(): void
     {
         echo $this->cityService->handleCities();
     }

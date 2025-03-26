@@ -3,7 +3,7 @@
 namespace services;
 
 use Exception;
-use TemplateFacade;
+use MyTemplate\TemplateFacade;
 
 class CityService
 {

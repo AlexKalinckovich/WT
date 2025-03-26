@@ -23,6 +23,7 @@
             <li class="nav-item"><a href="#" class="nav-link">Contacts</a></li>
         </ul>
     </nav>
+    <button class="order-btn"><a href="/login"> Admin panel</a></button>
 </header>
 
 <section id="citySection">
@@ -41,18 +42,18 @@
 <section id="food-list">
     <h2>Our Menu</h2>
     <div class="menu-grid">
-        {{ if !empty($menuItems) }}
-        {{ foreach $menuItems as $index => $item }}
+        @if(!empty($menuItems))
+        @foreach($menuItems as $index => $item)
         <div class="menu-item" data-id="{{ $index + 1 }}">
             <img src="public/images/{{ $item['image_path'] }}" alt="{{ $item['name'] }}">
             <h3>{{ $item['name'] }}</h3>
             <p class="description">{{ $item['description'] }}</p>
             <button class="order-btn">Order</button>
         </div>
-        {{ endforeach }}
-        {{ else }}
+        @endforeach
+        @else
         <p>No menu items available.</p>
-        {{ endif }}
+        @endif
     </div>
 </section>
 
