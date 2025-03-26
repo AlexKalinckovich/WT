@@ -68,7 +68,7 @@ class AdminController
 
     private function renderAdminPanel(): string
     {
-        return $this->adminService->handleAdminPanelAccess('templates/admin_panel.html');
+        return $this->adminService->handleAdminPanelAccess('public/templates/admin_panel.html');
     }
 
     public function downloadFile(): void

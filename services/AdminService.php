@@ -80,14 +80,14 @@ class AdminService
                 'name' => basename($dir),
                 'is_dir' => true,
                 'path' => $dir,
-                'fullPath' => realpath(__DIR__ . '/../' . $dir)
+                'fullPath' => realpath(__DIR__ . '/../public/' . $dir)
             ];
         }, $allowedDirs);
     }
 
     private function getCurrentDirFiles(string $currentDir): array
     {
-        $fullPath = __DIR__ . '/../' . $currentDir;
+        $fullPath = __DIR__ . '/../public/' . $currentDir;
         $items = scandir($fullPath);
         $files = [];
         foreach ($items as $item) {
@@ -157,10 +157,10 @@ class AdminService
 
     public function isPathAllowed(string $path): bool {
         $allowedPaths = [
-            realpath(__DIR__ . '/../views'),
-            realpath(__DIR__ . '/../views/css'),
-            realpath(__DIR__ . '/../views/js'),
-            realpath(__DIR__ . '/../views/images')
+            realpath(__DIR__ . '/../public/views'),
+            realpath(__DIR__ . '/../public/views/css'),
+            realpath(__DIR__ . '/../public/views/js'),
+            realpath(__DIR__ . '/../public/images')
         ];
 
         $filePath = realpath(dirname($path));

@@ -6,11 +6,11 @@
     <title>Fast Food Restaurant</title>
 
     <!-- Link to external CSS files -->
-    <link rel="stylesheet" href="/views/css/main.css">
-    <link rel="stylesheet" href="/views/css/buttons.css">
-    <link rel="stylesheet" href="/views/css/food-list.css">
-    <link rel ="stylesheet" href="/views/css/navigation.css">
-    <link rel="stylesheet" href="/views/css/cityForm.css">
+    <link rel="stylesheet" href="/public/views/css/main.css">
+    <link rel="stylesheet" href="/public/views/css/buttons.css">
+    <link rel="stylesheet" href="/public/views/css/food-list.css">
+    <link rel ="stylesheet" href="/public/views/css/navigation.css">
+    <link rel="stylesheet" href="/public/views/css/cityForm.css">
 </head>
 <body>
 <header>
@@ -23,7 +23,7 @@
             <li class="nav-item"><a href="#" class="nav-link">Contacts</a></li>
         </ul>
     </nav>
-    <button class="order-btn"><a href="/login"> Admin panel</a></button>
+    <button class="order-btn" id="adminBtn"> Admin panel</a></button>
 </header>
 
 <section id="citySection">
@@ -58,9 +58,9 @@
 </section>
 
 <!-- Link to external JavaScript files -->
-<script src="/views/js/main.js"></script>
-<script src="/views/js/food-list.js"></script>
-<script src="/views/js/headerLinks.js"></script>
-<script src="/views/js/cityForm.js"></script>
+<script src="/public/views/js/main.js"></script>
+<script src="/public/views/js/food-list.js"></script>
+<script src="/public/views/js/headerLinks.js"></script>
+<script src="/public/views/js/cityForm.js"></script>
 </body>
 </html>

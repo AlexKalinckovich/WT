@@ -50,7 +50,7 @@
                 <div class="file-actions">
                     <button class="delete-btn" data-path="{{ $file['fullPath'] }}">Удалить</button>
                     <button class="view-btn" data-path="{{ $file['fullPath'] }}">Просмотр</button>
-                    <a href="/downloadFile?path={{ urlencode($file['fullPath']) }}"
+                    <a href="../../index.php"
                        class="download-btn">Скачать</a>
                 </div>
                 @endif

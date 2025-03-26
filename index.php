@@ -70,7 +70,7 @@ $menuItems = $foodRepository->getFood();
 $foodRepository->closeConnection();
 
 try {
-    echo $templateFacade->render(__DIR__ . '\views\main_page.php', [
+    echo $templateFacade->render(__DIR__ . '\public\views\main_page.php', [
         'menuItems' => $menuItems,
     ]);
 } catch (Exception $e) {
