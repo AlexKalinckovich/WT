@@ -1,8 +1,9 @@
 <?php
-
+declare(strict_types=1);
 namespace Controller;
 
 use Exception;
+
 use Service\AdminService;
 
 /**
@@ -55,14 +56,14 @@ class AdminController
         echo json_encode(['valid' => $isValid]);
     }
 
-    public function handleAdminPanel(): void
+    public function handleAdminPanel(): string
     {
         if($this->isAdminAuthorized()) {
             header('Location: /login');
             exit();
         }
 
-        echo $this->renderAdminPanel();
+        return $this->renderAdminPanel();
     }
 
 

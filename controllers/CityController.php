@@ -14,8 +14,8 @@ class CityController
         $this->cityService = $cityService;
     }
 
-    public function handleCities(): void
+    public function handleCities(): string
     {
-        echo $this->cityService->handleCities();
+        return $this->cityService->handleCities();
     }
 }

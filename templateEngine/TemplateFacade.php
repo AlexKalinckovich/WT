@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace MyTemplate;
 require_once "TemplateRenderer.php";
 require_once "TemplateCache.php";

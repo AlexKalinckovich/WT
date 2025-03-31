@@ -1,19 +1,23 @@
 <?php
-
-namespace models;
+declare(strict_types=1);
+namespace repositories;
 use mysqli;
 
 class FoodRepository
 {
     private $configPath;
     private $connection;
-    public function __construct($configPath){
+    public function __construct($configPath = __DIR__ . '/../config/config.json'){
+        if (!file_exists($configPath)) {
+            die("Файл конфигурации не найден.");
+        }
         $this->configPath = $configPath;
         $this->sqlInit();
     }
 
-    private function sqlInit()
+    private function sqlInit(): void
     {
+
         $config = json_decode(file_get_contents($this->configPath), true);
         if ($config === null) {
             die("Ошибка декодирования файла конфигурации.");
@@ -27,7 +31,8 @@ class FoodRepository
         $this->connection = new mysqli($host, $user, $password, $dbname);
     }
 
-    public function getFood(){
+    public function getFood():array
+    {
         if ($this->connection->connect_error) {
             die("Ошибка подключения к базе данных:".$this->connection->connect_error);
         }
@@ -49,7 +54,8 @@ class FoodRepository
         return $menuItems;
     }
 
-    public function closeConnection(){
+    public function closeConnection(): void
+    {
         $this->connection->close();
     }
 }

@@ -6,11 +6,11 @@
     <title>Fast Food Restaurant</title>
 
     <!-- Link to external CSS files -->
-    <link rel="stylesheet" href="/public/views/css/main.css">
-    <link rel="stylesheet" href="/public/views/css/buttons.css">
-    <link rel="stylesheet" href="/public/views/css/food-list.css">
-    <link rel ="stylesheet" href="/public/views/css/navigation.css">
-    <link rel="stylesheet" href="/public/views/css/cityForm.css">
+    <link rel="stylesheet" href="/public/css/main.css">
+    <link rel="stylesheet" href="/public/css/buttons.css">
+    <link rel="stylesheet" href="/public/css/food-list.css">
+    <link rel ="stylesheet" href="/public/css/navigation.css">
+    <link rel="stylesheet" href="/public/css/cityForm.css">
 </head>
 <body>
 <header>
@@ -30,7 +30,7 @@
     <div class="modal-content">
         <span id="closeFormBtn" class="close">&times;</span>
         <h2>Введите города через запятую</h2>
-        <form id="cityForm" method="GET" action="/process-cities">
+        <form id="cityForm" method="GET" action="../../index.php">
             <label for="cities">Города:</label>
             <textarea id="cities" name="cities" rows="5" cols="50"></textarea>
             <br>
@@ -58,9 +58,9 @@
 </section>
 
 <!-- Link to external JavaScript files -->
-<script src="/public/views/js/main.js"></script>
-<script src="/public/views/js/food-list.js"></script>
-<script src="/public/views/js/headerLinks.js"></script>
-<script src="/public/views/js/cityForm.js"></script>
+<script src="/public/js/main.js"></script>
+<script src="/public/js/food-list.js"></script>
+<script src="/public/js/headerLinks.js"></script>
+<script src="/public/js/cityForm.js"></script>
 </body>
 </html>

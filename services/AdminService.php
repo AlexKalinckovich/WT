@@ -4,7 +4,6 @@ namespace Service;
 
 use Exception;
 use MyTemplate\TemplateFacade;
-
 class AdminService
 {
     private TemplateFacade $templateFacade;
@@ -45,10 +44,11 @@ class AdminService
     public function getAllowedDirs(): array
     {
         return [
-            'views',
-            'views/css',
-            'views/js',
-            'public/images'
+            'public',
+            'public/css',
+            'public/js',
+            'public/images',
+            'public/templates'
         ];
     }
 
@@ -87,7 +87,7 @@ class AdminService
 
     private function getCurrentDirFiles(string $currentDir): array
     {
-        $fullPath = __DIR__ . '/../public/' . $currentDir;
+        $fullPath = __DIR__ . '/../' . $currentDir;
         $items = scandir($fullPath);
         $files = [];
         foreach ($items as $item) {
@@ -157,9 +157,9 @@ class AdminService
 
     public function isPathAllowed(string $path): bool {
         $allowedPaths = [
-            realpath(__DIR__ . '/../public/views'),
-            realpath(__DIR__ . '/../public/views/css'),
-            realpath(__DIR__ . '/../public/views/js'),
+            realpath(__DIR__ . '/../public/'),
+            realpath(__DIR__ . '/../public/css'),
+            realpath(__DIR__ . '/../public/js'),
             realpath(__DIR__ . '/../public/images')
         ];
 
@@ -169,7 +169,7 @@ class AdminService
 
     public function handleAdminPanelAccess(string $templatePath): string
     {
-        $currentDir = $_GET['dir'] ?? 'views';
+        $currentDir = $_GET['dir'] ?? 'public';
         try {
             $files = $this->getAllowedFiles($currentDir);
             $breadcrumbs = $this->getBreadcrumbs($currentDir);

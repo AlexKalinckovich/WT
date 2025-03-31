@@ -1,7 +1,6 @@
 <?php
-
+declare(strict_types=1);
 namespace services;
-
 use Exception;
 use MyTemplate\TemplateFacade;
 
@@ -11,14 +10,14 @@ class CityService
     /**
      * @var TemplateFacade
      */
-    private $templateFacade;
+    private TemplateFacade $templateFacade;
 
     public function __construct(TemplateFacade $templateFacade)
     {
         $this->templateFacade = $templateFacade;
     }
 
-    public function handleCities()
+    public function handleCities():string
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             header("HTTP/1.1 405 Method Not Allowed");
