@@ -1,9 +1,13 @@
 <?php
 
 namespace MyTemplate;
+use utils\SingletonTrait;
+
+require_once __UTILS__ . '/SingletonTrait.php';
 
 class TemplateCompiler
 {
+    use SingletonTrait;
     public function compile(string $template): string
     {
         $template = preg_replace('/{{\s*(.*?)\s*}}/', '<?php echo $1 ?>', $template);

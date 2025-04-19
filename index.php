@@ -2,19 +2,27 @@
 
 declare(strict_types=1);
 
-use models\ModelsInitializer;
+use utils\ClassInitializer;
+use utils\Router;
 
-require_once __DIR__ . '/models/ModelsInitializer.php';
+require_once __DIR__   . '/config/pathConfig.php';
+require_once __UTILS__ . '/ClassInitializer.php';
 
-$modelsInitializer = new ModelsInitializer();
+
+$classInitializer = ClassInitializer::getInstance();
 
 $requestUri = isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : null;
 $requestMethod = $_SERVER['REQUEST_METHOD'] ?? null;
-
 try {
-    $router = $modelsInitializer->get('router');
+    $router = $classInitializer->get(Router::class);
     $router->route($requestMethod, $requestUri);
 } catch (Exception $e) {
     echo $e->getMessage();
-    die('Router not found');
+    echo 'Router not found';
 }
+
+$classInitializer->dispose();
+
+
+
+

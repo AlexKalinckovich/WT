@@ -1,14 +1,21 @@
 <?php
 
-namespace Service;
+namespace services;
+
+require_once __UTILS__ . '/SingletonTrait.php';
 
 use Exception;
 use MyTemplate\TemplateFacade;
+use utils\SingletonTrait;
+
+defined('__ADMIN_FILE_NAME__') or define('__ADMIN_FILE_NAME__', 'admin');
+
 class AdminService
 {
+    use SingletonTrait;
     private TemplateFacade $templateFacade;
 
-    public function __construct(TemplateFacade $templateFacade)
+    protected function __construct(TemplateFacade $templateFacade)
     {
         $this->templateFacade = $templateFacade;
     }
@@ -17,10 +24,9 @@ class AdminService
      * @throws Exception
      */
 
-    //############################## Functions for checking passwords to access #################################
     public function validateCredentials(string $username, string $password): bool
     {
-        $htpasswdPath = __DIR__ . '\.htpasswd';
+        $htpasswdPath = __CONFIG__ . '/.htpasswd';
         if (!file_exists($htpasswdPath)) {
             throw new Exception('Файл .htpasswd не найден');
         }
@@ -36,19 +42,15 @@ class AdminService
 
         return false;
     }
-    //############################## Functions for checking passwords to access #################################
-
-
-    //############################## Functions for files Showing #################################
 
     public function getAllowedDirs(): array
     {
         return [
-            'public',
-            'public/css',
-            'public/js',
-            'public/images',
-            'public/templates'
+            realpath(__PUBLIC__),
+            realpath(__CSS__),
+            realpath(__JS__),
+            realpath(__IMAGES__),
+            realpath(__TEMPLATES__)
         ];
     }
 
@@ -80,27 +82,31 @@ class AdminService
                 'name' => basename($dir),
                 'is_dir' => true,
                 'path' => $dir,
-                'fullPath' => realpath(__DIR__ . '/../public/' . $dir)
+                'fullPath' => realpath(__PUBLIC__ . DIRECTORY_SEPARATOR . $dir)
             ];
         }, $allowedDirs);
     }
 
     private function getCurrentDirFiles(string $currentDir): array
     {
-        $fullPath = __DIR__ . '/../' . $currentDir;
+        $fullPath = __ROOT__ . DIRECTORY_SEPARATOR .  $currentDir;
         $items = scandir($fullPath);
         $files = [];
         foreach ($items as $item) {
 
-            $itemPath = $currentDir . '/' . $item;
-            $itemFullPath = $fullPath . '\\' . $item;
+            if(!str_starts_with($item, __ADMIN_FILE_NAME__))
+            {
 
-            $files[] = [
-                'name' => $item,
-                'is_dir' => is_dir($itemFullPath),
-                'path' => $itemPath,
-                'fullPath' => realpath($itemFullPath)
-            ];
+                $itemPath = $currentDir   . DIRECTORY_SEPARATOR . $item;
+                $itemFullPath = $fullPath . DIRECTORY_SEPARATOR . $item;
+
+                $files[] = [
+                    'name' => $item,
+                    'is_dir' => is_dir($itemFullPath),
+                    'path' => $itemPath,
+                    'fullPath' => realpath($itemFullPath)
+                ];
+            }
         }
 
         return $files;
@@ -111,7 +117,7 @@ class AdminService
         if (str_ends_with($currentDir, '..'))
         {
             $offsetToRoot = strlen('/..') + 1;
-            $delimiterPosition = strrpos($currentDir, '/', -$offsetToRoot);
+            $delimiterPosition = strrpos($currentDir, '\\', -$offsetToRoot);
             if($delimiterPosition === false){
                 $currentDir = substr($currentDir, 0 ,$offsetToRoot + 1);
             }else{
@@ -130,7 +136,7 @@ class AdminService
         $allowedDirs = $this->getAllowedDirs();
         $isAllowed = false;
         foreach ($allowedDirs as $allowedDir) {
-            if (str_ends_with($currentDir, $allowedDir)) {
+            if (str_ends_with($allowedDir, $currentDir)) {
                 $isAllowed = true;
                 break;
             }
@@ -138,7 +144,6 @@ class AdminService
         return $isAllowed;
     }
 
-    //############################## Functions for files Showing #################################
     public function getBreadcrumbs(?string $currentDir): array {
         $breadcrumbs = [];
         if ($currentDir) {
@@ -156,15 +161,9 @@ class AdminService
     }
 
     public function isPathAllowed(string $path): bool {
-        $allowedPaths = [
-            realpath(__DIR__ . '/../public/'),
-            realpath(__DIR__ . '/../public/css'),
-            realpath(__DIR__ . '/../public/js'),
-            realpath(__DIR__ . '/../public/images')
-        ];
-
+        $allowedDirs = $this->getAllowedDirs();
         $filePath = realpath(dirname($path));
-        return in_array($filePath, $allowedPaths, true);
+        return in_array($filePath, $allowedDirs, true);
     }
 
     public function handleAdminPanelAccess(string $templatePath): string
@@ -183,5 +182,32 @@ class AdminService
         } catch (Exception $e) {
             die("Error: " . $e->getMessage());
         }
+    }
+
+    /**
+     * Проверяет, является ли файл изображением на основе расширения.
+     *
+     * @param string $path Путь к файлу.
+     * @return bool Возвращает true, если файл имеет расширение, соответствующее изображению.
+     */
+    public function isImage(string $path): bool
+    {
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        return in_array($ext, $allowedExtensions, true);
+    }
+
+
+    public function normalizePath(string $path, string $toDir): string
+    {
+        $normalizedPath = str_replace('\\', '/', $path);
+        $pos = strpos($normalizedPath, $toDir);
+
+        if ($pos !== false) {
+            $relativePath = substr($normalizedPath, $pos);
+        } else {
+            $relativePath = '';
+        }
+        return $relativePath;
     }
 }

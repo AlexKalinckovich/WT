@@ -1,17 +1,20 @@
 <?php
 
 namespace services;
+require_once __UTILS__ . '/SingletonTrait.php';
 
 use Exception;
+use utils\SingletonTrait;
 use MyTemplate\TemplateFacade;
 use repositories\FoodRepository;
 
 class MainService
 {
+    use SingletonTrait;
     private TemplateFacade $templateFacade;
     private FoodRepository $foodRepository;
 
-    public function __construct(TemplateFacade $templateFacade, FoodRepository $foodRepository)
+    protected function __construct(TemplateFacade $templateFacade, FoodRepository $foodRepository)
     {
         $this->templateFacade = $templateFacade;
         $this->foodRepository = $foodRepository;
@@ -19,9 +22,14 @@ class MainService
 
     public function handleMainPage():string
     {
-        $menuItems = $this->foodRepository->getFood();
+        $pizzas = $this->foodRepository->getAll();
+        $menuItems = array();
+        foreach ($pizzas as $pizza) {
+            $menuItems[] = $pizza->toArray();
+        }
+
         try {
-            $result = $this->templateFacade->render(__DIR__ . '\..\public\templates\main_page.html', [
+            $result = $this->templateFacade->render(__TEMPLATES__ .'/main_page.html', [
                 'menuItems' => $menuItems,
             ]);
         } catch (Exception $e) {

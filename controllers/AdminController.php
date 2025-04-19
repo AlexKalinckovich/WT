@@ -1,19 +1,24 @@
 <?php
 declare(strict_types=1);
 namespace Controller;
+require_once __UTILS__ . '/SingletonTrait.php';
 
 use Exception;
 
-use Service\AdminService;
+use utils\SingletonTrait;
+use services\AdminService;
+
+// HEADERS IN CONSTANT
 
 /**
  * @property $templateFacade
  */
 class AdminController
 {
+    use SingletonTrait;
     private AdminService $adminService;
 
-    public function __construct(AdminService $adminService)
+    protected function __construct(AdminService $adminService)
     {
         $this->adminService = $adminService;
     }
@@ -31,7 +36,7 @@ class AdminController
         }
         else
         {
-            include __DIR__ . '/../templates/login.html';
+            include __TEMPLATES__ . '/login.html';
         }
     }
 
@@ -69,7 +74,7 @@ class AdminController
 
     private function renderAdminPanel(): string
     {
-        return $this->adminService->handleAdminPanelAccess('public/templates/admin_panel.html');
+        return $this->adminService->handleAdminPanelAccess(__TEMPLATES__ . '/admin_panel.html');
     }
 
     public function downloadFile(): void
@@ -87,17 +92,52 @@ class AdminController
     public function getFileContent(): void
     {
         $path = $_GET['path'] ?? '';
-        if ($this->adminService->isPathAllowed($path)) {
-            header('Content-Type: application/json; charset=UTF-8');
-            json_encode('success:true');
-            $response = array(
-                'success' => true,
-                'content' => file_get_contents($path)
-            );
-            echo json_encode($response);
-            exit;
+
+        if (!$this->adminService->isPathAllowed($path)) {
+            http_response_code(403);
+            $this->jsonError('Доступ запрещён.');
         }
-        http_response_code(403);
+
+        if (!file_exists($path) || !is_readable($path)) {
+            http_response_code(404);
+            $this->jsonError('Файл не найден или недоступен для чтения.');
+        }
+        $isImage = $this->adminService->isImage($path);
+
+        $content = file_get_contents($path);
+
+        if ($content === false) {
+            http_response_code(500);
+            $this->jsonError('Не удалось прочитать файл.');
+        }
+
+        $encodedContent = $isImage ? base64_encode($content) : $content;
+
+        $dirCut = '/public';
+        $relativePath = $this->adminService->normalizePath($path,$dirCut);
+
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode([
+            'success' => true,
+            'content' => $encodedContent,
+            'mime'    => $isImage ? 'image' : 'text',
+            'isImage' => $isImage,
+            'src' => $relativePath
+        ]);
+        exit;
+    }
+
+    /**
+     * Унифицированный JSON-ответ об ошибке.
+     */
+    private function jsonError(string $message): void
+    {
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode([
+            'success' => false,
+            'message' => $message
+        ]);
+        exit;
     }
 
     public function uploadFile(): void
