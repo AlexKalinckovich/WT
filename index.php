@@ -18,7 +18,6 @@ try {
     $router->route($requestMethod, $requestUri);
 } catch (Exception $e) {
     echo $e->getMessage();
-    echo 'Router not found';
 }
 
 $classInitializer->dispose();
