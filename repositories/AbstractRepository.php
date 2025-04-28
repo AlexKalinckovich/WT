@@ -57,6 +57,10 @@ abstract class AbstractRepository implements Disposable
      */
     public abstract function getById(int $id): array;
 
+    public abstract function create(array $data): bool;
+    public abstract function delete(int $id): bool;
+    public abstract function update(array $data): bool;
+
     public function dispose(): void
     {
         $this->connection->close();

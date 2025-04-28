@@ -13,6 +13,8 @@ require_once __SERVICES__ . '/AdminService.php';
 require_once __SERVICES__ . '/MainService.php';
 
 require_once __REPOSITORIES__ . '/FoodRepository.php';
+require_once __REPOSITORIES__ . '/UserRepository.php';
+require_once __REPOSITORIES__ . '/OrderRepository.php';
 
 require_once __UTILS__ . '/Router.php';
 require_once __UTILS__ . '/SingletonTrait.php';
@@ -27,6 +29,7 @@ use MyTemplate\TemplateFacade;
 
 use repositories\FoodRepository;
 
+use repositories\OrderRepository;
 use repositories\UserRepository;
 use services\AdminService;
 use services\MainService;
@@ -56,10 +59,14 @@ final class ClassInitializer implements Disposable{
     private static array $definitions = [
         AdminController::class => [AdminController::class, [AdminService::class]],
         MainController::class  => [MainController::class, [MainService::class]],
-        MainService::class     => [MainService::class, [TemplateFacade::class, FoodRepository::class]],
+        MainService::class     => [MainService::class, [TemplateFacade::class,
+                                                        FoodRepository::class,
+                                                        UserRepository::class,
+                                                        OrderRepository::class]],
         AdminService::class    => [AdminService::class, [TemplateFacade::class]],
         FoodRepository::class  => [FoodRepository::class, []],
         UserRepository::class  => [UserRepository::class, []],
+        OrderRepository::class => [OrderRepository::class, []],
         TemplateFacade::class  => [TemplateFacade::class, []],
         Router::class          => [Router::class, [ClassInitializer::class]],
         ClassInitializer::class => [ClassInitializer::class,[]]
@@ -77,7 +84,7 @@ final class ClassInitializer implements Disposable{
             return self::$instances[$classKey];
         }
         if (!isset(self::$definitions[$classKey])) {
-            throw new \Exception("Определение для ключа '{$classKey}' не найдено.");
+            throw new Exception("Определение для ключа '$classKey' не найдено.");
         }
 
         [$class, $dependenciesKeys] = self::$definitions[$classKey];
@@ -103,7 +110,7 @@ final class ClassInitializer implements Disposable{
     }
 
     /**
-     * Очистка (сброс) кэшированных экземпляров, если требуется.
+     * Очистка (сброс) кэшированных экземпляров
      *
      * @param string $classKey
      */

@@ -8,10 +8,10 @@ use utils\Data;
 class User
 {
     use Data;
-    private int $user_id;
-    private string $user_name;
-    private string $user_surname;
-    private string $user_email;
+    private int $userId;
+    private string $userName;
+    private string $userSurname;
+    private string $userEmail;
     private string $salt;
     private string $token;
 }

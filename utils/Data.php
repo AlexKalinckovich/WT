@@ -61,6 +61,10 @@ trait Data {
         trigger_error("Свойство $name не найдено в классе " . get_class($this), E_USER_NOTICE);
     }
 
+    public function toArray() : array {
+        return get_object_vars($this);
+    }
+
     /**
      * Формирует строковое представление объекта.
      *

@@ -6,7 +6,7 @@ require_once __UTILS__ . '/Data.php';
 
 use utils\Data;
 
-class Pizza {
+class Food {
 
     use Data;
     private string $filePath;

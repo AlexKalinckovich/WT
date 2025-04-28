@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fast Food Restaurant</title>
 
-    <!-- Link to external CSS files -->
-    <link rel="stylesheet" href="/public/css/main.css">
-    <link rel="stylesheet" href="/public/css/buttons.css">
-    <link rel="stylesheet" href="/public/css/food-list.css">
-    <link rel ="stylesheet" href="/public/css/navigation.css">
+    <link rel="stylesheet" href="/public/css/mainPage/main.css">
+    <link rel="stylesheet" href="/public/css/mainPage/buttons.css">
+    <link rel="stylesheet" href="/public/css/mainPage/food-list.css">
+    <link rel="stylesheet" href="/public/css/mainPage/navigation.css">
+    <link rel="stylesheet" href="/public/css/mainPage/user-list.css">
+    <link rel="stylesheet" href="/public/css/mainPage/order-list.css">
 </head>
 <body>
 <header>
@@ -22,8 +23,38 @@
             <li class="nav-item"><a href="#" class="nav-link">Contacts</a></li>
         </ul>
     </nav>
-    <button class="order-btn" id="adminBtn"> Admin panel</a></button>
+    <button class="order-btn" id="adminBtn">Admin panel</button>
 </header>
+
+<section id="user-list">
+    <h2>Пользователи</h2>
+    @if(!empty($users))
+    <ul class="user-list">
+        @foreach($users as $user)
+        <li class="user-item">
+            {{ $user['userName'] }} {{ $user['userSurname'] }}
+        </li>
+        @endforeach
+    </ul>
+    @else
+    <p>Нет зарегистрированных пользователей.</p>
+    @endif
+</section>
+
+<section id="order-list">
+    <h2>Заказы</h2>
+    @if(!empty($orders))
+    <ul class="order-list">
+        @foreach($orders as $order)
+        <li class="order-item">
+            {{ $order['userName'] }} — {{ $order['foodName'] }}
+        </li>
+        @endforeach
+    </ul>
+    @else
+    <p>Нет активных заказов.</p>
+    @endif
+</section>
 
 <section id="food-list">
     <h2>Our Menu</h2>
@@ -43,7 +74,9 @@
     </div>
 </section>
 
-<!-- Link to external JavaScript files -->
+
+
+<!-- Существующие скрипты -->
 <script src="/public/js/main.js"></script>
 <script src="/public/js/food-list.js"></script>
 <script src="/public/js/headerLinks.js"></script>

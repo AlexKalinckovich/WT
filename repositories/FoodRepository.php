@@ -3,56 +3,90 @@ declare(strict_types=1);
 
 namespace repositories;
 
-require_once __UTILS__        . '/SingletonTrait.php';
-require_once __REPOSITORIES__ . '/AbstractRepository.php';
-require_once __EXCEPTIONS__   . '/NotImplementedException.php';
-require_once __MODELS__       . '/Pizza.php';
-
-use exceptions\NotImplementedException;
-use exceptions\SqlConnectionErrorException;
-use models\Pizza;
+use models\Food;
 use utils\SingletonTrait;
 
-class FoodRepository extends AbstractRepository {
+require_once __UTILS__        . '/SingletonTrait.php';
+require_once __REPOSITORIES__ . '/AbstractRepository.php';
+require_once __MODELS__       . '/Food.php';
+
+class FoodRepository extends AbstractRepository
+{
     use SingletonTrait;
 
-    /**
-     * Возвращает все записи из таблицы food_items.
-     * Реализует метод getAll интерфейса AbstractRepository.
-     *
-     * @return array
-     * @throws SqlConnectionErrorException
-     */
-    public function getAll(): array {
-        if ($this->connection->connect_error) {
-            throw new SqlConnectionErrorException("Ошибка подключения к базе данных:" . $this->connection->connect_error);
-        }
+    public function getAll(): array
+    {
+        $sql = "SELECT id, name, description, image_path FROM food_items";
+        $res = $this->connection->query($sql);
 
-        $sql = "SELECT name, description, image_path FROM food_items";
-        $result = $this->connection->query($sql);
-
-        $menuItems = [];
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $menuItems[] = Pizza::create(['name'        => $row["name"],
-                                              'description' => $row["description"],
-                                              'filePath'    => $row["image_path"]]);
+        $items = [];
+        if ($res->num_rows > 0) {
+            while ($row = $res->fetch_assoc()) {
+                $items[] = Food::create([
+                    'filePath'    => $row['image_path'],
+                    'name'        => $row['name'],
+                    'description' => $row['description'],
+                ]);
             }
         }
-        return $menuItems;
+        return $items;
     }
 
-    /**
-     * Метод получения записи по идентификатору.
-     * В текущей реализации не поддерживается.
-     *
-     * @param int $id
-     * @return array
-     * @throws NotImplementedException
-     */
     public function getById(int $id): array
     {
-        throw new NotImplementedException("Метод getById не реализован.");
+        $sql = "SELECT id, name, description, image_path 
+                FROM food_items 
+                WHERE id = ?";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        $items = [];
+        if ($row = $res->fetch_assoc()) {
+            $items[] = Food::create([
+                'filePath'    => $row['image_path'],
+                'name'        => $row['name'],
+                'description' => $row['description'],
+            ]);
+        }
+        return $items;
     }
 
+    public function create(array $data): bool
+    {
+        $sql = "INSERT INTO food_items (name, description, image_path) VALUES (?, ?, ?)";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bind_param(
+            "sss",
+            $data['name'],
+            $data['description'],
+            $data['image_path']
+        );
+        return $stmt->execute();
+    }
+
+    public function update(array $data): bool
+    {
+        $sql = "UPDATE food_items
+                   SET name = ?, description = ?, image_path = ?
+                 WHERE id = ?";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bind_param(
+            "sssi",
+            $data['name'],
+            $data['description'],
+            $data['image_path'],
+            $data['id']
+        );
+        return $stmt->execute();
+    }
+
+    public function delete(int $id): bool
+    {
+        $sql = "DELETE FROM food_items WHERE id = ?";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bind_param("i", $id);
+        return $stmt->execute();
+    }
 }
