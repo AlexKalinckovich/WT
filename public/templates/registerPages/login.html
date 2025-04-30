@@ -1,0 +1,21 @@
+<main>
+    <form id="login-form">
+        <div id="loginError" class="error-message"></div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label><input type="checkbox" id="rememberMe" name="rememberMe"> Запомнить меня</label>
+        </div>
+        <button type="submit" id="submitBtn" class="submit-btn">Войти</button>
+    </form>
+    <p class="redirect-login">Нет аккаунта? <a href="/registration">Зарегистрироваться</a></p>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<script src="/public/js/auth/login.js"></script>
