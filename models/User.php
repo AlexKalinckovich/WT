@@ -12,6 +12,7 @@ class User
     private string $userName;
     private string $userSurname;
     private string $userEmail;
+    private string $passwordHash;
     private string $salt;
     private string $token;
 }

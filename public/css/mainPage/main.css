@@ -1,13 +1,13 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #fff3e6; /* Light background for contrast */
+    background-color: #fff3e6;
     color: #333;
     margin: 0;
     padding: 0;
 }
 
 header {
-    background-color: #ff5733; /* Red color */
+    background-color: #ff5733;
     color: white;
     text-align: center;
     padding: 20px 0;
@@ -19,5 +19,5 @@ header {
 
 #food-list h2 {
     text-align: center;
-    color: #ff5733; /* Red color */
+    color: #ff5733;
 }

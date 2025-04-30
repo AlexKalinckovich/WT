@@ -6,6 +6,7 @@ require_once __UTILS__ . '/SingletonTrait.php';
 
 use Exception;
 use MyTemplate\TemplateFacade;
+use utils\Logger;
 use utils\SingletonTrait;
 
 defined('__ADMIN_FILE_NAME__') or define('__ADMIN_FILE_NAME__', 'admin');
@@ -180,7 +181,8 @@ class AdminService
                 'allowedDirs' => $allowedDirs
             ]);
         } catch (Exception $e) {
-            die("Error: " . $e->getMessage());
+            Logger::error("Error: " . $e->getMessage());
+            throw;
         }
     }
 

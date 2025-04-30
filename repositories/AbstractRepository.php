@@ -5,9 +5,12 @@ namespace repositories;
 require_once __UTILS__ . '/Disposable.php';
 
 
+
+use exceptions\ConfigurationFileNotFoundException;
 use exceptions\NotImplementedException;
 use mysqli;
 use utils\Disposable;
+use utils\Logger;
 
 /**
  * Интерфейс репозитория, аналогичный JPA-репозиторию.
@@ -18,9 +21,14 @@ abstract class AbstractRepository implements Disposable
 {
     protected mysqli $connection;
 
+    /**
+     * @throws ConfigurationFileNotFoundException
+     */
     protected function __construct(string $configPath = __CONFIG__ . '/config.json') {
         if (!file_exists($configPath)) {
-            die("Файл конфигурации не найден.");
+            $errorMessage = 'Файл конфигурации не найден.';
+            Logger::error($errorMessage);
+            throw new ConfigurationFileNotFoundException($errorMessage);
         }
         $this->sqlInit(__CONFIG__ . '/config.json');
     }

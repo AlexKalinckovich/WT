@@ -8,9 +8,13 @@ require_once __TEMPLATE_ENGINE__ . '/TemplateFacade.php';
 
 require_once __CONTROLLERS__     . '/MainController.php';
 require_once __CONTROLLERS__     . '/AdminController.php';
+require_once __CONTROLLERS__     . '/RegistrationController.php';
+require_once __CONTROLLERS__     . '/LoginController.php';
 
 require_once __SERVICES__ . '/AdminService.php';
 require_once __SERVICES__ . '/MainService.php';
+require_once __SERVICES__ . '/RegistrationService.php';
+require_once __SERVICES__ . '/LoginService.php';
 
 require_once __REPOSITORIES__ . '/FoodRepository.php';
 require_once __REPOSITORIES__ . '/UserRepository.php';
@@ -21,8 +25,10 @@ require_once __UTILS__ . '/SingletonTrait.php';
 require_once __UTILS__ . '/Disposable.php';
 
 use Controller\AdminController;
+use Controller\LoginController;
 use Controller\MainController;
 
+use Controller\RegistrationController;
 use Exception;
 
 use MyTemplate\TemplateFacade;
@@ -32,7 +38,9 @@ use repositories\FoodRepository;
 use repositories\OrderRepository;
 use repositories\UserRepository;
 use services\AdminService;
+use services\LoginService;
 use services\MainService;
+use services\RegistrationService;
 
 
 final class ClassInitializer implements Disposable{
@@ -59,16 +67,22 @@ final class ClassInitializer implements Disposable{
     private static array $definitions = [
         AdminController::class => [AdminController::class, [AdminService::class]],
         MainController::class  => [MainController::class, [MainService::class]],
+        RegistrationController::class => [RegistrationController::class, [RegistrationService::class]],
+        LoginController::class => [LoginController::class, [LoginService::class]],
         MainService::class     => [MainService::class, [TemplateFacade::class,
-                                                        FoodRepository::class,
-                                                        UserRepository::class,
-                                                        OrderRepository::class]],
-        AdminService::class    => [AdminService::class, [TemplateFacade::class]],
-        FoodRepository::class  => [FoodRepository::class, []],
-        UserRepository::class  => [UserRepository::class, []],
-        OrderRepository::class => [OrderRepository::class, []],
-        TemplateFacade::class  => [TemplateFacade::class, []],
-        Router::class          => [Router::class, [ClassInitializer::class]],
+            FoodRepository::class,
+            UserRepository::class,
+            OrderRepository::class]],
+        AdminService::class    =>  [AdminService::class, [TemplateFacade::class]],
+        RegistrationService::class => [RegistrationService::class, [UserRepository::class,
+            TemplateFacade::class]],
+        LoginService::class => [LoginService::class, [UserRepository::class,
+            TemplateFacade::class]],
+        FoodRepository::class  =>  [FoodRepository::class, []],
+        UserRepository::class  =>  [UserRepository::class, []],
+        OrderRepository::class =>  [OrderRepository::class, []],
+        TemplateFacade::class  =>  [TemplateFacade::class, []],
+        Router::class          =>  [Router::class, [ClassInitializer::class]],
         ClassInitializer::class => [ClassInitializer::class,[]]
     ];
 

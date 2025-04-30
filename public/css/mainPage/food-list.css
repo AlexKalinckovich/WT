@@ -6,8 +6,8 @@
 }
 
 .menu-item {
-    background-color: #fff; /* White background for food items */
-    border: 2px solid #ff5733; /* Border color */
+    background-color: #fff;
+    border: 2px solid #ff5733;
     border-radius: 10px;
     text-align: center;
     padding: 10px;
@@ -15,7 +15,7 @@
 }
 
 .menu-item:hover {
-    transform: scale(1.05); /* Slight zoom effect on hover */
+    transform: scale(1.05);
 }
 
 .menu-item img {

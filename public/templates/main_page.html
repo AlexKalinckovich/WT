@@ -11,20 +11,34 @@
     <link rel="stylesheet" href="/public/css/mainPage/navigation.css">
     <link rel="stylesheet" href="/public/css/mainPage/user-list.css">
     <link rel="stylesheet" href="/public/css/mainPage/order-list.css">
+    <link rel="stylesheet" href="/public/css/mainPage/account.css">
 </head>
 <body>
 <header>
     <h1>Fast Food Restaurant</h1>
     <nav>
         <ul class="nav-links">
-            <li class="nav-item"><a href="#" class="nav-link active">About</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Services</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Price</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Contacts</a></li>
+            <li class="nav-item"><a class="nav-link active">About</a></li>
+            <li class="nav-item"><a class="nav-link">Services</a></li>
+            <li class="nav-item"><a class="nav-link">Price</a></li>
+            <li class="nav-item"><a class="nav-link">Contacts</a></li>
         </ul>
     </nav>
     <button class="order-btn" id="adminBtn">Admin panel</button>
     <a href="/registration" class="order-btn">Register</a>
+    <div class="user-panel">
+    <span class="greeting">
+      {{ $isGuest ? 'Гость' : $userName }}
+    </span>
+
+        @if(!$isGuest)
+        <button id="changeAccountBtn" class="action-btn">Сменить аккаунт</button>
+        <button id="logoutBtn"        class="action-btn">Выйти</button>
+        @else
+        <a href="/login" class="action-btn">Войти</a>
+        <a href="/registration" class="action-btn">Регистрация</a>
+        @endif
+    </div>
 </header>
 
 <section id="user-list">
@@ -77,9 +91,10 @@
 
 
 
-<!-- Существующие скрипты -->
 <script src="/public/js/main_page/main.js"></script>
 <script src="/public/js/main_page/food-list.js"></script>
 <script src="/public/js/main_page/headerLinks.js"></script>
+<script src="/public/js/main_page/userPanel.js"></script>
+
 </body>
 </html>

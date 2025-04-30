@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 use utils\ClassInitializer;
 use utils\Router;
+use utils\Logger;
 
 require_once __DIR__   . '/config/pathConfig.php';
 require_once __UTILS__ . '/ClassInitializer.php';
-
+require_once __UTILS__ . '/Logger.php';
 
 $classInitializer = ClassInitializer::getInstance();
 
@@ -17,7 +18,7 @@ try {
     $router = $classInitializer->get(Router::class);
     $router->route($requestMethod, $requestUri);
 } catch (Exception $e) {
-    echo $e->getMessage();
+    Logger::error($e->getMessage(),[$e]);
 }
 
 $classInitializer->dispose();

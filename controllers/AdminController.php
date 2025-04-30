@@ -8,7 +8,6 @@ use Exception;
 use utils\SingletonTrait;
 use services\AdminService;
 
-// HEADERS IN CONSTANT
 
 /**
  * @property $templateFacade
@@ -28,17 +27,6 @@ class AdminController
         return isset($_SESSION['isAuthorized']) && $_SESSION['isAuthorized'];
     }
 
-    public function handleLogin(): void
-    {
-        if($this->isAdminAuthorized())
-        {
-            echo $this->renderAdminPanel();
-        }
-        else
-        {
-            include __TEMPLATES__ . '/login.html';
-        }
-    }
 
     public function checkPassword(): void
     {
