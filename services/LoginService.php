@@ -59,11 +59,11 @@ class LoginService
             throw new Exception('Email или пароль не заполнены');
         }
 
-        $users = $this->userRepository->getByEmail($input['email']);
-        if (count($users) === 0) {
+        $user = $this->userRepository->getByEmail($input['email']);
+        if ($user === null) {
             throw new Exception('Пользователь не найден');
         }
-        $user = $users[0];
+
 
         $serverSalt  = $user->getSalt();
         $storedHash  = $user->getPasswordHash();
@@ -75,9 +75,9 @@ class LoginService
             throw new Exception('Неверный пароль');
         }
 
-        session_start();
-        $_SESSION['userId']   = $user->getUserId();
-        $_SESSION['userName'] = $user->getUserName();
+        $_SESSION['userId']       = $user->getUserId();
+        $_SESSION['salt']         = $user->getSalt();
+        $_SESSION['passwordHash'] = $user->getPasswordHash();
 
         if (!empty($input['rememberMe'])) {
             $token = bin2hex(random_bytes(16));
@@ -91,11 +91,14 @@ class LoginService
 
     public function logout(): void
     {
-        session_start();
 
-        if (!empty($_SESSION['userId'])) {
-            $userId = $_SESSION['userId'];
-            $this->userRepository->updateRememberToken($userId, '');
+        if (!empty($_COOKIE['remember_token'])) {
+            $token = $_COOKIE['remember_token'];
+            $user = $this->userRepository->getByToken($token);
+            if ($user !== null) {
+                $this->userRepository->updateRememberToken($user->getUserId, '');
+            }
+            setcookie('remember_token', '', time() - 3600, '/');
         }
 
         setcookie('remember_token', '', [
@@ -106,6 +109,7 @@ class LoginService
         ]);
 
         $_SESSION = [];
+        session_destroy();
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
             setcookie(session_name(), '', [
@@ -117,7 +121,6 @@ class LoginService
                 'samesite' => $params["samesite"] ?? 'Lax',
             ]);
         }
-        session_destroy();
 
         Logger::info('Пользователь вышел из системы', []);
     }

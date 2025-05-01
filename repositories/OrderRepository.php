@@ -29,7 +29,7 @@ class OrderRepository extends AbstractRepository
         return $this->mapOrders($this->connection->query($sql));
     }
 
-    public function getById(int $id): array
+    public function getById(int $id): Order | null
     {
         $sql = <<<SQL
                     SELECT 
@@ -44,7 +44,8 @@ class OrderRepository extends AbstractRepository
         $stmt = $this->connection->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
-        return $this->mapOrders($stmt->get_result());
+        $orders = $this->mapOrders($stmt->get_result());
+        return $orders[0];
     }
 
     private function mapOrders(mysqli_result $res): array

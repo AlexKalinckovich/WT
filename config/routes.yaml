@@ -1,0 +1,42 @@
+routes:
+  GET:
+    /admin_panel:
+      controller: controller\AdminController
+      method: handleAdminPanel
+    /checkPassword:
+      controller: controller\AdminController
+      method: checkPassword
+    /downloadFile:
+      controller: controller\AdminController
+      method: downloadFile
+    /getFileContent:
+      controller: controller\AdminController
+      method: getFileContent
+    /:
+      controller: controller\MainController
+      method: handleMainPage
+    /registration:
+      controller: controller\RegistrationController
+      method: handleRegistrationPage
+    /login:
+      controller: controller\LoginController
+      method: handleLoginPage
+
+  POST:
+    /uploadFile:
+      controller: controller\AdminController
+      method: uploadFile
+    /registerUser:
+      controller: controller\RegistrationController
+      method: registerUser
+    /authorize:
+      controller: controller\LoginController
+      method: handleAuthorization
+    /logout:
+      controller: controller\LoginController
+      method: logout
+
+  PUT:
+    /deleteFile:
+      controller: controller\AdminController
+      method: deleteFile

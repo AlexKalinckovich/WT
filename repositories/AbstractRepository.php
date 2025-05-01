@@ -52,7 +52,6 @@ abstract class AbstractRepository implements Disposable
      * Возвращает все записи.
      *
      * @return array
-     * @throws NotImplementedException если метод не реализован.
      */
     public abstract function getAll(): array;
 
@@ -60,10 +59,9 @@ abstract class AbstractRepository implements Disposable
      * Возвращает запись по идентификатору.
      *
      * @param int $id
-     * @return array
-     * @throws NotImplementedException если метод не реализован.
+     * @return object|null
      */
-    public abstract function getById(int $id): array;
+    public abstract function getById(int $id): object | null;
 
     public abstract function create(array $data): bool;
     public abstract function delete(int $id): bool;

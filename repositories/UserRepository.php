@@ -5,6 +5,7 @@ namespace repositories;
 
 use models\User;
 use mysqli_result;
+use mysqli_stmt;
 use utils\SingletonTrait;
 
 require_once __UTILS__        . '/SingletonTrait.php';
@@ -17,20 +18,21 @@ class UserRepository extends AbstractRepository
 
     public function getAll(): array
     {
-        $sql = "SELECT user_id, user_name, user_surname, user_email, server_salt, token FROM users";
+        $sql = "SELECT user_id, user_name, user_surname, user_email, password_hash, server_salt, token FROM users";
         return $this->fetchUsers($sql);
     }
 
-    public function getById(int $id): array
+    public function getById(int $id): User | null
     {
-        $sql = "SELECT user_id, user_name, user_surname, user_email, server_salt, token 
+        $sql = "SELECT user_id, user_name, user_surname, user_email, password_hash, server_salt, token 
                 FROM users 
                 WHERE user_id = ?";
         $stmt = $this->connection->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $res = $stmt->get_result();
-        return $this->mapUsers($res);
+        $users = $this->mapUsers($res);
+        return $users !== [] ? $users[0] : null;
     }
 
     private function fetchUsers(string $sql): array
@@ -45,21 +47,31 @@ class UserRepository extends AbstractRepository
         if ($res->num_rows > 0) {
             while ($row = $res->fetch_assoc()) {
                 $users[] = User::create([
-                    'userId'      => (int)$row['user_id'],
-                    'userName'    => $row['user_name'],
-                    'userSurname' => $row['user_surname'],
-                    'userEmail'   => $row['user_email'],
-                    'salt'        => $row['server_salt'],
-                    'token'       => $row['token'],
+                    'userId'       => (int)$row['user_id'],
+                    'userName'     => $row['user_name'],
+                    'userSurname'  => $row['user_surname'],
+                    'userEmail'    => $row['user_email'],
+                    'passwordHash' => $row['password_hash'],
+                    'salt'         => $row['server_salt'],
+                    'token'        => $row['token'],
                 ]);
             }
         }
+        $res->free();
         return $users;
     }
 
-    public function create(array $data): bool
+    /**
+     * Создаёт нового пользователя и по ссылке возвращает его ID.
+     *
+     * @param array    $data   Данные для вставки (user_name, user_surname, и т.д.)
+     * @param int|null $newId  [out] Здесь будет записан сгенерированный ID пользователя
+     * @return bool            true при успешном вставке
+     */
+    public function create(array $data, ?int &$newId = null): bool
     {
-        $sql = "INSERT INTO users (user_name, user_surname, user_email,password_hash, server_salt, token)
+        $sql = "INSERT INTO users 
+              (user_name, user_surname, user_email, password_hash, server_salt, token)
             VALUES (?, ?, ?, ?, ?, ?)";
 
         $stmt = $this->connection->prepare($sql);
@@ -73,8 +85,15 @@ class UserRepository extends AbstractRepository
             $data['token']
         );
 
-        return $stmt->execute();
+        $ok = $stmt->execute();
+        if ($ok) {
+            // Получаем последний вставленный ID
+            $newId = $this->connection->insert_id;
+        }
+
+        return $ok;
     }
+
 
 
     public function update(array $data): bool
@@ -103,14 +122,15 @@ class UserRepository extends AbstractRepository
         return $stmt->execute();
     }
 
-    public function getByEmail(string $email): array
+    public function getByEmail(string $email): User | null
     {
         $sql  = "SELECT user_id, user_name, user_surname, user_email, password_hash, server_salt, token
                FROM users
               WHERE user_email = ? LIMIT 1";
         $stmt = $this->connection->prepare($sql);
         $stmt->bind_param("s", $email);
-        return $this->getMatchUsers($stmt);
+        $matchUsers = $this->getMatchUsers($stmt);
+        return $matchUsers !== [] ? $matchUsers[0] : null;
     }
 
     public function updateRememberToken(int $userId, string $token): bool
@@ -121,21 +141,22 @@ class UserRepository extends AbstractRepository
         return $stmt->execute();
     }
 
-    public function getByToken(string $token): array
+    public function getByToken(string $token): User | null
     {
         $sql  = "SELECT user_id, user_name, user_surname, user_email, password_hash, server_salt, token
                FROM users
               WHERE token = ? LIMIT 1";
         $stmt = $this->connection->prepare($sql);
         $stmt->bind_param("s", $token);
-        return $this->getMatchUsers($stmt);
+        $matchUsers = $this->getMatchUsers($stmt);
+        return $matchUsers === [] ? null : $matchUsers[0];
     }
 
     /**
-     * @param bool|\mysqli_stmt $stmt
+     * @param bool | mysqli_stmt $stmt
      * @return array
      */
-    private function getMatchUsers(bool|\mysqli_stmt $stmt): array
+    private function getMatchUsers(bool | mysqli_stmt $stmt): array
     {
         $stmt->execute();
         $res = $stmt->get_result();
@@ -143,15 +164,16 @@ class UserRepository extends AbstractRepository
         $users = [];
         while ($row = $res->fetch_assoc()) {
             $users[] = User::create([
-                'userId' => (int)$row['user_id'],
-                'userName' => $row['user_name'],
-                'userSurname' => $row['user_surname'],
-                'userEmail' => $row['user_email'],
+                'userId'       => (int)$row['user_id'],
+                'userName'     => $row['user_name'],
+                'userSurname'  => $row['user_surname'],
+                'userEmail'    => $row['user_email'],
                 'passwordHash' => $row['password_hash'],
-                'salt' => $row['server_salt'],
-                'token' => $row['token'],
+                'salt'         => $row['server_salt'],
+                'token'        => $row['token'],
             ]);
         }
+        $res->free();
         return $users;
     }
 

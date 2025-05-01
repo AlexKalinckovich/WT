@@ -14,7 +14,7 @@
         <a href="?">Главная</a>
         @if($currentDir)
         @foreach($breadcrumbs as $crumb)
-        / <a href="?dir={{ urlencode($crumb['path']) }}">{{ $crumb['name'] }}</a>
+          <a href="?dir={{ urlencode($crumb['path']) }}">{{ $crumb['name'] }}</a>
         @endforeach
         @endif
     </div>

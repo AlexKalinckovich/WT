@@ -24,8 +24,6 @@ class LoginController
 
     public function handleAuthorization(): void
     {
-        header('Content-Type: application/json');
-        session_start();
 
         $input = json_decode(file_get_contents('php://input'), true);
         if (!is_array($input)) {
@@ -36,6 +34,8 @@ class LoginController
 
         try {
             $ok = $this->loginService->authenticate($input);
+
+            header('Content-Type: application/json');
             if($ok) {
                 $result = json_encode(['success' => true]);
             }else{

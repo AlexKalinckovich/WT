@@ -25,16 +25,19 @@ class MainService
     private UserRepository   $userRepository;
     private OrderRepository  $orderRepository;
 
+    private AuthorizationService $authorizationService;
     protected function __construct(
         TemplateFacade   $templateFacade,
         FoodRepository   $foodRepository,
         UserRepository   $userRepository,
-        OrderRepository  $orderRepository
+        OrderRepository  $orderRepository,
+        AuthorizationService $authorizationService
     ) {
         $this->templateFacade  = $templateFacade;
         $this->foodRepository  = $foodRepository;
         $this->userRepository  = $userRepository;
         $this->orderRepository = $orderRepository;
+        $this->authorizationService = $authorizationService;
     }
 
     /**
@@ -42,29 +45,6 @@ class MainService
      */
     public function handleMainPage(): string
     {
-        session_start();
-        $isGuest  = true;
-        $userName = null;
-
-
-        if (!empty($_SESSION['userId'])) {
-            $isGuest  = false;
-            $userName = $_SESSION['userName'];
-        }
-        elseif (!empty($_COOKIE['remember_token'])) {
-            $token = $_COOKIE['remember_token'];
-            $users = $this->userRepository->getByToken($token);
-            if (count($users) === 1) {
-                $user     = $users[0];
-                $isGuest  = false;
-                $userName = $user->getUserName();
-
-                $_SESSION['userId']   = $user->getUserId();
-                $_SESSION['userName'] = $userName;
-            } else {
-                setcookie('remember_token', '', time() - 3600, '/');
-            }
-        }
 
         // 1) menuItems
         $food    = $this->foodRepository->getAll();
@@ -92,6 +72,9 @@ class MainService
                 'foodName' => $order->getFoodName(),
             ];
         }
+
+        $isGuest  = $this->authorizationService->isGuest();
+        $userName = $this->authorizationService->getUserName();
 
         try {
             $result = $this->templateFacade->render(

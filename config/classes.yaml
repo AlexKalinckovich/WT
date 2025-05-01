@@ -1,0 +1,109 @@
+# config/classes.yaml
+classes:
+  # ======================
+  # Контроллеры (controllers/)
+  # ======================
+  controller\AdminController:
+    class: controller\AdminController
+    dependencies:
+      - services\AdminService
+    file: /controllers/AdminController.php
+
+  controller\MainController:
+    class: controller\MainController
+    dependencies:
+      - services\MainService
+    file: /controllers/MainController.php
+
+  controller\RegistrationController:
+    class: controller\RegistrationController
+    dependencies:
+      - services\RegistrationService
+    file: /controllers/RegistrationController.php
+
+  controller\LoginController:
+    class: controller\LoginController
+    dependencies:
+      - services\LoginService
+    file: /controllers/LoginController.php
+
+  # ======================
+  # Сервисы (services/)
+  # ======================
+  services\AdminService:
+    class: services\AdminService
+    dependencies:
+      - MyTemplate\TemplateFacade
+    file: /services/AdminService.php
+
+  services\MainService:
+    class: services\MainService
+    dependencies:
+      - MyTemplate\TemplateFacade
+      - repositories\FoodRepository
+      - repositories\UserRepository
+      - repositories\OrderRepository
+      - services\AuthorizationService
+    file: /services/MainService.php
+
+  services\RegistrationService:
+    class: services\RegistrationService
+    dependencies:
+      - repositories\UserRepository
+      - MyTemplate\TemplateFacade
+    file: /services/RegistrationService.php
+
+  services\LoginService:
+    class: services\LoginService
+    dependencies:
+      - repositories\UserRepository
+      - MyTemplate\TemplateFacade
+    file: /services/LoginService.php
+
+  services\AuthorizationService:
+    class: services\AuthorizationService
+    dependencies:
+      - repositories\UserRepository
+      - services\LoginService
+    file: /services/AuthorizationService.php
+
+  # ======================
+  # Репозитории (repositories/)
+  # ======================
+  repositories\FoodRepository:
+    class: repositories\FoodRepository
+    dependencies: []
+    file: /repositories/FoodRepository.php
+
+  repositories\UserRepository:
+    class: repositories\UserRepository
+    dependencies: []
+    file: /repositories/UserRepository.php
+
+  repositories\OrderRepository:
+    class: repositories\OrderRepository
+    dependencies: []
+    file: /repositories/OrderRepository.php
+
+  # ======================
+  # Шаблонизатор (MyTemplate/)
+  # ======================
+  MyTemplate\TemplateFacade:
+    class: MyTemplate\TemplateFacade
+    dependencies: []
+    file: /templateEngine/TemplateFacade.php
+
+  # ======================
+  # Утилиты (utils/)
+  # ======================
+
+  utils\Router:
+    class: utils\Router
+    dependencies:
+      - utils\ClassLoader
+    file: /utils/Router.php
+
+  utils\ClassLoader:
+    class: utils\ClassLoader
+    dependencies: []
+    file: /utils/ClassLoader.php

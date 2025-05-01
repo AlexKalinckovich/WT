@@ -58,12 +58,17 @@ class RegistrationService
             'token'         => '',
         ];
 
-        $result = $this->userRepository->create($userData);
+        $userId = -1;
+        $result = $this->userRepository->create($userData, $userId);
 
         if (!$result) {
             Logger::error('Не удалось сохранить пользователя', $userData);
             throw new Exception('Ошибка при регистрации.');
         }
+
+        $_SESSION['userId']       = $userId;
+        $_SESSION['salt']         = $userData['server_salt'];
+        $_SESSION['passwordHash'] = $userData['password_hash'];
 
         Logger::info('Пользователь успешно зарегистрирован', ['email' => $input['email']]);
         return true;

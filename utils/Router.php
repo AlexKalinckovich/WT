@@ -1,12 +1,8 @@
 <?php
 declare(strict_types=1);
-namespace utils;
-require_once __UTILS__ . '/SingletonTrait.php';
 
-use Controller\AdminController;
-use Controller\LoginController;
-use Controller\MainController;
-use Controller\RegistrationController;
+namespace utils;
+
 use Exception;
 use exceptions\NotCallableException;
 use exceptions\PageNotFoundException;
@@ -14,34 +10,41 @@ use exceptions\PageNotFoundException;
 class Router
 {
     use SingletonTrait;
-    private array $handleMapping;
+
+    private array $handleMapping = [];
+    private static string $routesPath = __CONFIG__ . '/routes.yaml';
 
     /**
      * @throws Exception
      */
-    protected function __construct(ClassInitializer $classInitializer)
+    protected function __construct(ClassLoader $ClassLoader)
     {
-        $this->handleMapping = [
-            'GET' => [
-                '/admin_panel'    => [$classInitializer->get(AdminController::class), 'handleAdminPanel'],
-                '/checkPassword'  => [$classInitializer->get(AdminController::class), 'checkPassword'],
-                '/downloadFile'   => [$classInitializer->get(AdminController::class), 'downloadFile'],
-                '/getFileContent' => [$classInitializer->get(AdminController::class), 'getFileContent'],
-                '/'               => [$classInitializer->get(MainController::class), 'handleMainPage'],
-                '/registration'   => [$classInitializer->get(RegistrationController::class), 'handleRegistrationPage'],
-                '/login'          => [$classInitializer->get(LoginController::class), 'handleLoginPage'],
-            ],
-            'POST' => [
-                '/uploadFile'     => [$classInitializer->get(AdminController::class), 'uploadFile'],
-                '/registerUser'   => [$classInitializer->get(RegistrationController::class), 'registerUser'],
-                '/authorize'      => [$classInitializer->get(LoginController::class), 'handleAuthorization'],
-                '/logout'         => [$classInitializer->get(LoginController::class), 'logout'],
+        $this->loadRoutes($ClassLoader);
+    }
 
-            ],
-            'PUT' => [
-                '/deleteFile'     => [$classInitializer->get(AdminController::class), 'deleteFile'],
-            ]
-        ];
+    /**
+     * @throws Exception
+     */
+    private function loadRoutes(ClassLoader $ClassLoader): void
+    {
+        if (!file_exists(self::$routesPath)) {
+            throw new Exception("Routes config file not found");
+        }
+
+        $config = yaml_parse_file(self::$routesPath);
+        if (!isset($config['routes'])) {
+            throw new Exception("Invalid routes config structure");
+        }
+
+        foreach ($config['routes'] as $method => $routes) {
+            foreach ($routes as $route => $handlerConfig) {
+                $controller = $ClassLoader->get($handlerConfig['controller']);
+                $this->handleMapping[$method][$route] = [
+                    $controller,
+                    $handlerConfig['method']
+                ];
+            }
+        }
     }
 
     /**
@@ -50,21 +53,31 @@ class Router
      */
     public function route(string $requestMethod, string $requestUri): void
     {
+        $requestUri = $this->normalizeUri($requestUri);
+
         if (isset($this->handleMapping[$requestMethod][$requestUri])) {
             $handler = $this->handleMapping[$requestMethod][$requestUri];
             if (is_callable($handler)) {
                 $response = call_user_func($handler);
                 echo $response;
             } else {
-                $errorMessage = "Обработчик для запроса $requestMethod $requestUri не является вызываемым.";
-                Logger::error($errorMessage);
-                throw new NotCallableException($errorMessage);
+                $error = "Handler for $requestMethod $requestUri is not callable";
+                Logger::error($error);
+                throw new NotCallableException($error);
             }
         } else {
-            $errorMessage = "Страница не найдена.";
-            Logger::error($errorMessage);
+            $error = "Page not found: $requestMethod $requestUri";
+            Logger::error($error);
             http_response_code(404);
-            throw new PageNotFoundException($errorMessage);
+            throw new PageNotFoundException($error);
         }
+    }
+
+    private function normalizeUri(string $uri): string
+    {
+        if($uri !== '/'){
+            $uri = parse_url(rtrim($uri, '/'), PHP_URL_PATH) ?? '';
+        }
+        return $uri;
     }
 }

@@ -29,10 +29,11 @@ class FoodRepository extends AbstractRepository
                 ]);
             }
         }
+        $res->free();
         return $items;
     }
 
-    public function getById(int $id): array
+    public function getById(int $id): Food | null
     {
         $sql = "SELECT id, name, description, image_path 
                 FROM food_items 
@@ -50,7 +51,8 @@ class FoodRepository extends AbstractRepository
                 'description' => $row['description'],
             ]);
         }
-        return $items;
+        $res->free();
+        return $items[0];
     }
 
     public function create(array $data): bool
