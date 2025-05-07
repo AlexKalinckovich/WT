@@ -6,6 +6,8 @@ require_once __UTILS__ . '/SingletonTrait.php';
 
 use Exception;
 use MyTemplate\TemplateFacade;
+use repositories\ClickStatisticRepository;
+use utils\Logger;
 use utils\SingletonTrait;
 
 defined('__ADMIN_FILE_NAME__') or define('__ADMIN_FILE_NAME__', 'admin');
@@ -15,9 +17,11 @@ class AdminService
     use SingletonTrait;
     private TemplateFacade $templateFacade;
 
-    protected function __construct(TemplateFacade $templateFacade)
+    private ClickStatisticRepository $clickStatisticRepository;
+    protected function __construct(TemplateFacade $templateFacade, ClickStatisticRepository $clickStatisticRepository)
     {
         $this->templateFacade = $templateFacade;
+        $this->clickStatisticRepository = $clickStatisticRepository;
     }
 
     /**
@@ -166,22 +170,44 @@ class AdminService
         return in_array($filePath, $allowedDirs, true);
     }
 
+    /**
+     * @throws Exception
+     */
     public function handleAdminPanelAccess(string $templatePath): string
     {
         $currentDir = $_GET['dir'] ?? 'public';
         try {
-            $files = $this->getAllowedFiles($currentDir);
-            $breadcrumbs = $this->getBreadcrumbs($currentDir);
-            $allowedDirs = $this->getAllowedDirs();
-            return $this->templateFacade->render($templatePath, [
-                'currentDir' => $currentDir,
-                'files' => $files,
-                'breadcrumbs' => $breadcrumbs,
-                'allowedDirs' => $allowedDirs
-            ]);
+            $result = $this->getRenderedPage($currentDir, $templatePath);
         } catch (Exception $e) {
-            die("Error: " . $e->getMessage());
+            $result = $this->getRenderedPage(__PUBLIC__, $templatePath);
+            Logger::error("Error: " . $e->getMessage());
         }
+        return $result;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getRenderedPage(string $currentDir, string $templatePath): string
+    {
+        $files = $this->getAllowedFiles($currentDir);
+        $breadcrumbs = $this->getBreadcrumbs($currentDir);
+        $allowedDirs = $this->getAllowedDirs();
+        $clickStats = $this->clickStatisticRepository->getAll();
+        $elementArray = array();
+        $totalClicks = 0;
+        foreach ($clickStats as $clickStat) {
+            $elementArray[] = $clickStat->toArray();
+            $totalClicks += $clickStat->getClickCount();
+        }
+        return $this->templateFacade->render($templatePath, [
+            'currentDir'  => $currentDir,
+            'files'       => $files,
+            'breadcrumbs' => $breadcrumbs,
+            'allowedDirs' => $allowedDirs,
+            'clickStats'  => $elementArray,
+            'totalClicks' => $totalClicks,
+        ]);
     }
 
     /**

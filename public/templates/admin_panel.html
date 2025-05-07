@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ-панель</title>
-    <link rel="stylesheet" href="/public/css/admin.css">
+    <title>{{ $languageMessages['__adminPanel'] }}</title>
+    <link rel="stylesheet" href="/public/css/admin/admin.css">
+    <link rel="stylesheet" href="/public/css/admin/statistics.css">
 </head>
 <body>
 <div class="admin-container">
-    <h1>Административная панель</h1>
+    <h1>{{ $languageMessages['__adminPanel'] }}</h1>
 
     <div class="breadcrumb">
-        <a href="?">Главная</a>
+        <a href="?">{{ $languageMessages['__main'] }}</a>
         @if($currentDir)
         @foreach($breadcrumbs as $crumb)
           <a href="?dir={{ urlencode($crumb['path']) }}">{{ $crumb['name'] }}</a>
@@ -20,22 +21,22 @@
     </div>
 
     <div class="upload-section">
-        <h2>Загрузка файлов</h2>
+        <h2>{{ $languageMessages['__fileDownload'] }}</h2>
         <form id="uploadForm" enctype="multipart/form-data">
             <input type="file" name="file" id="fileInput" required>
-            <label for="dirSelect">Выберите директорию:</label>
+            <label for="dirSelect">{{ $languageMessages['__chooseDir'] }}:</label>
             <select name="targetDir" id="dirSelect" required>
                 @foreach($allowedDirs as $dir)
                 <option value="{{ $dir }}">{{ $dir }}</option>
                 @endforeach
             </select>
-            <button type="submit">Загрузить</button>
+            <button type="submit">{{ $languageMessages['__download'] }}</button>
         </form>
         <div id="uploadStatus" class="status-message"></div>
     </div>
 
     <div class="file-list">
-        <h2>Список файлов</h2>
+        <h2>{{ $languageMessages['__fileList'] }}</h2>
         @if(!empty($files))
         <div class="file-items">
             @foreach($files as $file)
@@ -48,29 +49,57 @@
                 <span class="file-name">📄 {{ $file['name'] }}</span>
                 <span class="file-path">{{ $file['path'] }}</span>
                 <div class="file-actions">
-                    <button class="delete-btn" data-path="{{ $file['fullPath'] }}">Удалить</button>
-                    <button class="view-btn" data-path="{{ $file['fullPath'] }}">Просмотр</button>
-                    <a class="download-btn">Скачать</a>
+                    <button class="delete-btn" data-path="{{ $file['fullPath'] }}">{{ $languageMessages['__deleteFile'] }}</button>
+                    <button class="view-btn" data-path="{{ $file['fullPath'] }}">{{ $languageMessages['__viewFile'] }}</button>
+                    <a class="download-btn">{{ $languageMessages['__download'] }}</a>
                 </div>
                 @endif
             </div>
             @endforeach
         </div>
         @else
-        <p class="empty">Файлы не найдены!</p>
+        <p class="empty">{{ $languageMessages['__filesNotFound'] }}!</p>
         @endif
     </div>
 
-    <!-- Modal -->
+    <div class="stats-section">
+        <h2>{{ $languageMessages['__clickStatistic'] }}</h2>
+
+        @if(!empty($clickStats))
+        <div class="stats-chart">
+            <div class="chart-header">
+                <span class="chart-title">{{ $languageMessages['__element'] }}</span>
+                <span class="chart-title">{{ $languageMessages['__clicks'] }}</span>
+            </div>
+
+            @foreach($clickStats as $stat)
+            <div class="chart-row">
+                <div class="chart-label">
+                    {{ $stat['elementType'] }} #{{ $stat['elementId'] }}
+                </div>
+                <div class="chart-bar-container">
+                    <div class="chart-bar"
+                         style="width: {{ ($stat['clickCount'] / $totalClicks) * 100 }}%">
+                        <span class="chart-value">{{ $stat['clickCount'] }}</span>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+        @else
+        <p class="empty">{{ $languageMessages['__noDataForView'] }}</p>
+        @endif
+    </div>
+
     <div id="fileModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <pre id="fileContent"></pre>
-            <img id="fileImage" alt="Предпросмотр изображения">
+            <img id="fileImage">
         </div>
     </div>
 </div>
 
-<script src="/public/js/admin/admin.js"></script>
+<script type="module" src="/public/js/admin/admin.js"></script>
 </body>
 </html>

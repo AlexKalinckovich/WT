@@ -16,13 +16,16 @@ class RegistrationService
 
     private TemplateFacade   $templateFacade;
     private UserRepository   $userRepository;
+    private MailService      $mailService;
 
     protected function __construct(
         UserRepository   $userRepository,
         TemplateFacade   $templateFacade,
+        MailService      $mailService
     ) {
         $this->userRepository  = $userRepository;
         $this->templateFacade  = $templateFacade;
+        $this->mailService     = $mailService;
     }
 
 
@@ -56,6 +59,7 @@ class RegistrationService
             'server_salt'   => $serverSalt,
             'password_hash' => $finalHash,
             'token'         => '',
+            'isAuthorized'  => true
         ];
 
         $userId = -1;
@@ -66,10 +70,21 @@ class RegistrationService
             throw new Exception('Ошибка при регистрации.');
         }
 
-        $_SESSION['userId']       = $userId;
-        $_SESSION['salt']         = $userData['server_salt'];
-        $_SESSION['passwordHash'] = $userData['password_hash'];
+        if(session_status() === PHP_SESSION_NONE){
+            session_start();
+        }
 
+        $_SESSION['user_id']    = $userId;
+        $_SESSION['session_id'] = session_id();
+        $_SESSION['ip_hash']    = hash('sha256', $_SERVER['REMOTE_ADDR']);
+        $_SESSION['ua_hash']    = hash('sha256', $_SERVER['HTTP_USER_AGENT']);
+
+        $randomUrl  = '/confirmRegistration';
+        $userName   = $userData['user_name'];
+        $userEmail  = $userData['user_email'];
+
+        //$this->mailService->sendRegistrationConfirmation($userName, $userEmail, $randomUrl);
+        $this->userRepository->create($userData);
         Logger::info('Пользователь успешно зарегистрирован', ['email' => $input['email']]);
         return true;
     }
@@ -77,7 +92,7 @@ class RegistrationService
     public function handleRegistrationPage(): string
     {
         $result = '';
-        $type = 'Регистрация';
+        $type = '__registration';
         try {
             $main = $this->templateFacade->render(__TEMPLATES__ . '/registerPages/registration.html', []);
         } catch (Exception $e) {

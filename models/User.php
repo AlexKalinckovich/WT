@@ -15,4 +15,5 @@ class User
     private string $passwordHash;
     private string $salt;
     private string $token;
+    private bool   $isAuthorized;
 }

@@ -1,7 +1,4 @@
 "use strict";
-
-
-
 document.addEventListener("DOMContentLoaded", () => {
     const form     = document.getElementById("login-form");
     const btn      = document.getElementById("submitBtn");

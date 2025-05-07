@@ -4,6 +4,7 @@ namespace services;
 require_once __UTILS__ . '/SingletonTrait.php';
 require_once __REPOSITORIES__ . '/UserRepository.php';
 
+use DateTime;
 use Exception;
 use repositories\UserRepository;
 use utils\Logger;
@@ -16,19 +17,22 @@ class LoginService
 
     private TemplateFacade   $templateFacade;
     private UserRepository   $userRepository;
+    private MailService      $mailService;
 
     protected function __construct(
         UserRepository   $userRepository,
         TemplateFacade   $templateFacade,
+        MailService      $mailService
     ) {
         $this->userRepository  = $userRepository;
         $this->templateFacade  = $templateFacade;
+        $this->mailService    = $mailService;
     }
 
     public function handleLoginPage(): string
     {
         $result = '';
-        $type = 'Логин';
+        $type = '__login';
         try {
             $main = $this->templateFacade->render(__TEMPLATES__ . '/registerPages/login.html', []);
         } catch (Exception $e) {
@@ -64,6 +68,10 @@ class LoginService
             throw new Exception('Пользователь не найден');
         }
 
+        $isAuthorized = $user->getIsAuthorized();
+        if(!$isAuthorized) {
+            throw new Exception("Пользователь не авторизован");
+        }
 
         $serverSalt  = $user->getSalt();
         $storedHash  = $user->getPasswordHash();
@@ -74,16 +82,27 @@ class LoginService
         if (!hash_equals($storedHash, $finalHash)) {
             throw new Exception('Неверный пароль');
         }
-
-        $_SESSION['userId']       = $user->getUserId();
-        $_SESSION['salt']         = $user->getSalt();
-        $_SESSION['passwordHash'] = $user->getPasswordHash();
+        $userId = $user->getUserId();
 
         if (!empty($input['rememberMe'])) {
             $token = bin2hex(random_bytes(16));
-            $this->userRepository->updateRememberToken($user->getUserId(), $token);
+            $this->userRepository->updateRememberToken($userId, $token);
             setcookie('remember_token', $token, time() + 60 * 60 * 24 * 30, '/');
         }
+
+        if(session_status() === PHP_SESSION_NONE){
+            session_start();
+        }
+
+        $_SESSION['user_id'] = $userId;
+        $_SESSION['session_id'] = session_id();
+        $_SESSION['ip_hash'] = hash('sha256', $_SERVER['REMOTE_ADDR']);
+        $_SESSION['ua_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT']);
+
+        $unixTime  = time();
+        $userName  = $user->getUserName();
+        $userEmail = $user->getUserEmail();
+        $this->mailService->sendLoginNotification($userName, $userEmail, $unixTime);
 
         Logger::info('Пользователь авторизован', ['id' => $user->getUserId()]);
         return true;
@@ -109,7 +128,7 @@ class LoginService
         ]);
 
         $_SESSION = [];
-        session_destroy();
+
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
             setcookie(session_name(), '', [

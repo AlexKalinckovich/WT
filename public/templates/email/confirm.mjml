@@ -1,0 +1,41 @@
+<mjml>
+    <mj-head>
+        <mj-title>{{ $languageMessages['__confirmRegistration'] }}</mj-title>
+        <mj-preview>{{ $languageMessage['__thxForRegistration']}} {{ $languageMessages['__fastFoodRestaurant'] }}</mj-preview>
+        <mj-attributes>
+            <mj-all font-family="Arial, sans-serif" />
+            <mj-text font-size="16px" color="#333333" />
+            <mj-button background-color="#5e6ebf" color="#ffffff" font-size="16px" padding="15px 30px" border-radius="4px" />
+        </mj-attributes>
+        <mj-style inline="inline">
+            .footer-text { font-size: 12px; color: #888888; }
+        </mj-style>
+    </mj-head>
+
+    <mj-body background-color="#f4f4f4">
+        <mj-section background-color="#ffffff" padding="20px">
+            <mj-column>
+                <mj-text font-size="20px" font-weight="bold">
+                    {{ $languageMessage['__welcome'] }} {{ $languageMessage['__fastFoodRestaurant'] }}!
+                </mj-text>
+                <mj-text>
+                    {{ $languageMessage['__thxForRegistration'] }}, {{$userName}}. {{ $languageMessage['__toFinishRegistration'] }}, {{ $languageMessage['__pressTheButton'] }}:
+                </mj-text>
+                <mj-button href="{{$confirmUrl}}">
+                    {{ $languageMessage['__confirmEmail'] }}
+                </mj-button>
+            </mj-column>
+        </mj-section>
+
+        <mj-section padding="10px">
+            <mj-column>
+                <mj-text css-class="footer-text">
+                    {{ $languageMessage['__ignoreMessage'] }}
+                </mj-text>
+                <mj-text css-class="footer-text">
+                    © 2025 {{ $languageMessage['__fastFoodRestaurant'] }}.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

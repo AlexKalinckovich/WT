@@ -35,6 +35,12 @@ routes:
     /logout:
       controller: controller\LoginController
       method: logout
+    /confirmRegistration:
+      controller: controller\AuthorizationController
+      method: confirmRegistration
+    /trackClick:
+      controller: controller\ClickStatisticController
+      method: trackClick
 
   PUT:
     /deleteFile:

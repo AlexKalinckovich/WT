@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Food Restaurant</title>
+    <title>{{ $languageMessages['__fastFoodRestaurant'] }}</title>
 
     <link rel="stylesheet" href="/public/css/mainPage/main.css">
     <link rel="stylesheet" href="/public/css/mainPage/buttons.css">
@@ -12,37 +12,59 @@
     <link rel="stylesheet" href="/public/css/mainPage/user-list.css">
     <link rel="stylesheet" href="/public/css/mainPage/order-list.css">
     <link rel="stylesheet" href="/public/css/mainPage/account.css">
+    <script src="/public/js/trackClick.js"></script>
 </head>
 <body>
 <header>
-    <h1>Fast Food Restaurant</h1>
+    <h1>{{ $languageMessages['__fastFoodRestaurant'] }}</h1>
     <nav>
         <ul class="nav-links">
-            <li class="nav-item"><a class="nav-link active">About</a></li>
-            <li class="nav-item"><a class="nav-link">Services</a></li>
-            <li class="nav-item"><a class="nav-link">Price</a></li>
-            <li class="nav-item"><a class="nav-link">Contacts</a></li>
+            <li class="nav-item"><a class="nav-link active">{{ $languageMessages['__about'] }}</a></li>
+            <li class="nav-item"><a class="nav-link">{{ $languageMessages['__service'] }}</a></li>
+            <li class="nav-item"><a class="nav-link">{{ $languageMessages['__price'] }}</a></li>
+            <li class="nav-item"><a class="nav-link">{{ $languageMessages['__contact'] }}</a></li>
         </ul>
     </nav>
-    <button class="order-btn" id="adminBtn">Admin panel</button>
-    <a href="/registration" class="order-btn">Register</a>
+    <button class="order-btn" id="adminBtn">{{ $languageMessages['__adminPanel'] }}</button>
     <div class="user-panel">
     <span class="greeting">
-      {{ $isGuest ? 'Гость' : $userName }}
+      {{ $isGuest ? $languageMessages['__guest'] : $userName }}
     </span>
 
         @if(!$isGuest)
-        <button id="changeAccountBtn" class="action-btn">Сменить аккаунт</button>
-        <button id="logoutBtn"        class="action-btn">Выйти</button>
+        <button id="changeAccountBtn"
+                class="action-btn"
+                data-element-type="account"
+                data-element-id="switch">
+            {{ $languageMessages['__changeTheAccount'] }}
+        </button>
+
+        <button id="logoutBtn"
+                class="action-btn"
+                data-element-type="account"
+                data-element-id="logout">
+            {{ $languageMessages['__logout'] }}
+        </button>
+
         @else
-        <a href="/login" class="action-btn">Войти</a>
-        <a href="/registration" class="action-btn">Регистрация</a>
+        <a href="/login"
+           class="action-btn"
+           data-element-type="account"
+           data-element-id="login">
+            {{ $languageMessages['__login'] }}
+        </a>
+        <a href="/registration"
+           class="action-btn"
+           data-element-type="account"
+           data-element-id="registration">
+            {{ $languageMessages['__registration'] }}
+        </a>
         @endif
     </div>
 </header>
 
 <section id="user-list">
-    <h2>Пользователи</h2>
+    <h2>{{ $languageMessages['__users'] }}</h2>
     @if(!empty($users))
     <ul class="user-list">
         @foreach($users as $user)
@@ -52,12 +74,12 @@
         @endforeach
     </ul>
     @else
-    <p>Нет зарегистрированных пользователей.</p>
+    <p>{{ $languageMessages['__noRegisteredUsers']}}</p>
     @endif
 </section>
 
 <section id="order-list">
-    <h2>Заказы</h2>
+    <h2>{{ $languageMessages['__orders'] }}</h2>
     @if(!empty($orders))
     <ul class="order-list">
         @foreach($orders as $order)
@@ -67,12 +89,12 @@
         @endforeach
     </ul>
     @else
-    <p>Нет активных заказов.</p>
+    <p>{{ $languageMessages['__noActiveOrders'] }}</p>
     @endif
 </section>
 
 <section id="food-list">
-    <h2>Our Menu</h2>
+    <h2>{{ $languageMessages['__ourMenu'] }}</h2>
     <div class="menu-grid">
         @if(!empty($menuItems))
         @foreach($menuItems as $index => $item)
@@ -80,11 +102,15 @@
             <img src="public/images/{{ $item['image_path'] }}" alt="{{ $item['name'] }}">
             <h3>{{ $item['name'] }}</h3>
             <p class="description">{{ $item['description'] }}</p>
-            <button class="order-btn">Order</button>
+            <button class="order-btn"
+                    data-element-type="food_item"
+                    data-element-id="order">
+                {{ $languageMessages['__order'] }}
+            </button>
         </div>
         @endforeach
         @else
-        <p>No menu items available.</p>
+        <p>{{ $languageMessages['__noMenuItemsAvailable'] }}</p>
         @endif
     </div>
 </section>

@@ -1,45 +1,45 @@
 <main>
     <form id="registration-form">
         <div class="form-group">
-            <label for="userName">Имя:</label>
+            <label for="userName">{{ $languageMessages['__name'] }}:</label>
             <input type="text" id="userName" name="userName" required>
         </div>
 
         <div class="form-group">
-            <label for="userSurname">Фамилия:</label>
+            <label for="userSurname">{{ $languageMessages['__surname'] }}:</label>
             <input type="text" id="userSurname" name="userSurname" required>
         </div>
 
         <div class="form-group">
-            <label for="email">Электронная почта:</label>
+            <label for="email">{{ $languageMessages['__email'] }}:</label>
             <input type="email" id="email" name="email" required>
         </div>
 
         <div class="form-group">
-            <label for="password">Пароль:</label>
+            <label for="password">{{ $languageMessages['__password'] }}:</label>
             <input type="password" id="password" name="password" minlength="6" required>
         </div>
 
         <div class="form-group">
-            <label for="rememberMe">Запомнить пароль:</label>
+            <label for="rememberMe">{{ $languageMessages['__rememberMe'] }}:</label>
             <input type="checkbox" id="rememberMe" name="rememberMe">
         </div>
 
         <div class="form-group">
-            <label for="captchaInput">Введите код с изображения:</label>
+            <label for="captchaInput"> {{ $languageMessages['__enterCaptcha'] }}:</label>
             <canvas id="captchaCanvas" width="150" height="50"></canvas>
             <input type="text" id="captchaInput" name="captcha" required>
-            <button type="button" id="refreshCaptcha">Обновить капчу</button>
+            <button type="button" id="refreshCaptcha">{{ $languageMessages['__updateCaptcha'] }}</button>
         </div>
 
         @if(!empty($error))
         <div class="error-message">{{ $error }}</div>
         @endif
 
-        <button type="submit" id="submitBtn" class="submit-btn">Зарегистрироваться</button>
+        <button type="submit" id="submitBtn" class="submit-btn">{{ $languageMessages['__registration'] }}</button>
     </form>
 
-    <p class="redirect-login">Уже есть аккаунт? <a href="/login">Войти</a></p>
+    <p class="redirect-login">{{ $languageMessages['__haveAccount'] }}? <a href="/login"> {{ $languageMessages['__login'] }} </a></p>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>

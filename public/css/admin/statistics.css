@@ -1,0 +1,48 @@
+.stats-section {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.chart-row {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
+.chart-label {
+    width: 200px;
+    padding-right: 1rem;
+}
+
+.chart-bar-container {
+    flex-grow: 1;
+    height: 30px;
+    background: #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.chart-bar {
+    height: 100%;
+    background: #4CAF50;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.chart-value {
+    position: absolute;
+    right: 8px;
+    color: white;
+    line-height: 30px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}

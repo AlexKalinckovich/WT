@@ -27,6 +27,18 @@ classes:
       - services\LoginService
     file: /controllers/LoginController.php
 
+  controller\AuthorizationController:
+    class: controller\AuthorizationController
+    dependencies:
+      - services\AuthorizationService
+    file: /controllers/AuthorizationController.php
+
+  controller\ClickStatisticController:
+    class: controller\ClickStatisticController
+    dependencies:
+      - services\ClickStatisticService
+    file: /controllers/ClickStatisticController.php
+
   # ======================
   # Сервисы (services/)
   # ======================
@@ -34,6 +46,7 @@ classes:
     class: services\AdminService
     dependencies:
       - MyTemplate\TemplateFacade
+      - repositories\ClickStatisticRepository
     file: /services/AdminService.php
 
   services\MainService:
@@ -51,6 +64,7 @@ classes:
     dependencies:
       - repositories\UserRepository
       - MyTemplate\TemplateFacade
+      - services\MailService
     file: /services/RegistrationService.php
 
   services\LoginService:
@@ -58,6 +72,7 @@ classes:
     dependencies:
       - repositories\UserRepository
       - MyTemplate\TemplateFacade
+      - services\MailService
     file: /services/LoginService.php
 
   services\AuthorizationService:
@@ -66,6 +81,24 @@ classes:
       - repositories\UserRepository
       - services\LoginService
     file: /services/AuthorizationService.php
+
+  services\MailService:
+    class: services\MailService
+    dependencies:
+      - MyTemplate\TemplateFacade
+    file: /services/MailService.php
+
+  services\ClickStatisticService:
+    class: services\ClickStatisticService
+    dependencies:
+      - repositories\ClickStatisticRepository
+    file: /services/ClickStatisticService.php
+
+  services\TranslatorService:
+    class: services\TranslatorService
+    dependencies: []
+    file: /services/TranslatorService.php
+
 
   # ======================
   # Репозитории (repositories/)
@@ -84,6 +117,16 @@ classes:
     class: repositories\OrderRepository
     dependencies: []
     file: /repositories/OrderRepository.php
+
+  repositories\ClickStatisticRepository:
+    class: repositories\ClickStatisticRepository
+    dependencies: []
+    file: /repositories/ClickStatisticRepository.php
+
+  repositories\AbstractRepository:
+    class: repositories\AbstractRepository
+    dependencies: [ ]
+    file: /repositories/AbstractRepository.php
 
   # ======================
   # Шаблонизатор (MyTemplate/)
@@ -107,3 +150,23 @@ classes:
     class: utils\ClassLoader
     dependencies: []
     file: /utils/ClassLoader.php
+
+  # ======================
+  # Модели (models/)
+  # ======================
+  models\ClickStatistic:
+    class: models\ClickStatistic
+    dependencies: []
+    file: /models/ClickStatistic.php
+  models\Food:
+    class: models\Food
+    dependencies: []
+    file: /models/Food.php
+  models\User:
+    class: models\User
+    dependencies: []
+    file: /models/User.php
+  models\Order:
+    class: models\Order
+    dependencies: []
+    file: /models/Order.php
